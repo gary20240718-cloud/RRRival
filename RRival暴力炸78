@@ -518,4 +518,42 @@ RunService.RenderStepped:Connect(function()
                 -- 檢查並強制建立
                 forceCreateESP(player)
                 
-                l
+                local ui = ESP_Objects[player]
+                -- 再次確認 UI 是否存活
+                if ui and ui.billboard and ui.billboard.Parent then
+                    ui.nameLabel.Visible = Config.Name or Config.Distance
+                    if Config.Name and Config.Distance then
+                        ui.nameLabel.Text = player.Name .. " [" .. math.floor(dist) .. "m]"
+                    elseif Config.Name then
+                        ui.nameLabel.Text = player.Name
+                    elseif Config.Distance then
+                        ui.nameLabel.Text = "[" .. math.floor(dist) .. "m]"
+                    end
+                    
+                    ui.healthText.Visible = Config.HealthText
+                    ui.healthText.Text = math.floor(humanoid.Health) .. " HP"
+                    
+                    ui.healthBg.Visible = Config.HealthBar
+                    if Config.HealthBar then
+                        local ratio = humanoid.Health / humanoid.MaxHealth
+                        ui.healthBar.Size = UDim2.new(1, 0, ratio, 0)
+                        ui.healthBar.BackgroundColor3 = (ratio < 0.3) and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(0, 255, 0)
+                    end
+                end
+
+                -- 全身染色
+                if Config.Chams then
+                    if not Chams_Objects[player] then
+                        local h = Instance.new("Highlight")
+                        h.FillColor = Color3.fromRGB(255, 50, 50)
+                        h.FillTransparency = 0.5
+                        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                        h.Adornee = player.Character
+                        h.Parent = player.Character
+                        Chams_Objects[player] = {Highlight = h}
+                    end
+                end
+            end
+        end
+    end
+end)
